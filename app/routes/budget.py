@@ -1,15 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from models.budget import BudgetIn, BudgetOut
 from config import db
-from bson import ObjectId
 from datetime import datetime
 
 router = APIRouter()
 
 @router.post("/budgets", response_model=BudgetOut)
 async def create_budget(budget: BudgetIn):
-    data = budget.dict()
-    data["created_at"] = datetime.utcnow()
+    data = budget.model_dump()
+    data["created_at"] = datetime.now()
     
     result = await db.budgets.insert_one(data)
     new_budget = await db.budgets.find_one({"_id": result.inserted_id})
