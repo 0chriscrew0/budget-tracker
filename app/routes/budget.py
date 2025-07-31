@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from models.budget import BudgetIn, BudgetOut
+from models.user import UserDB
+from auth.utils import get_current_user
 from config import db
 from datetime import datetime
 
@@ -36,3 +38,8 @@ async def get_budgets():
             created_at=doc["created_at"]
         ))
     return budgets
+
+@router.get("/protected")
+async def protected_route(user: dict = Depends(get_current_user)):
+    return {"message": f"Welcome, {user['username']}!"}
+

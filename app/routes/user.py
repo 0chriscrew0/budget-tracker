@@ -38,7 +38,7 @@ async def login_user(user: LoginIn):
     if not existing_user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    if not bcrypt.checkpw(user.password.encode("utf-8"), existing_user["hashed_password"].encode("utf=8")):
+    if not bcrypt.checkpw(user.password.encode("utf-8"), existing_user["hashed_password"].encode("utf-8")):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token = create_access_token(data={"sub": str(existing_user["_id"])})
