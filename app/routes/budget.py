@@ -30,13 +30,24 @@ async def get_budgets(user: dict = Depends(get_current_user)):
     budgets_cursor = db.budgets.find({"user_id": str(user["_id"])})
     budget_docs = await budgets_cursor.to_list(length=100)
 
+    expense_sums = await db.expenses.aggregate([
+        {"$match": {"user_id": str(user["_id"])}},
+        {"$group": {
+            "_id": "$budget_id",
+            "total": {"$sum": "$amount"}
+        }}
+    ]).to_list(length=100)
+
+    expense_totals = {item["_id"]: item["total"] for item in expense_sums}
+
     budgets = [
         BudgetOut(
             id=str(doc["_id"]),
             name=doc["name"],
             amount=doc["amount"],
             month=doc["month"],
-            created_at=doc["created_at"]
+            created_at=doc["created_at"],
+            balance=doc["amount"] - expense_totals.get(str(doc["_id"]), 0)
         )
         for doc in budget_docs
     ]

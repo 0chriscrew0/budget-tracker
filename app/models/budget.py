@@ -9,3 +9,4 @@ class BudgetIn(BaseModel):
 class BudgetOut(BudgetIn):
     id: str
     created_at: datetime
+    balance: float
