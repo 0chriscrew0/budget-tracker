@@ -1,7 +1,7 @@
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
 from models.expense import ExpenseIn, ExpenseOut
-from models.budget import BudgetIn, BudgetOut
+from models.budget import BudgetDetail, BudgetIn, BudgetOut
 from auth.utils import get_current_user
 from config import db
 from datetime import datetime, timezone
@@ -54,13 +54,53 @@ async def get_budgets(user: dict = Depends(get_current_user)):
 
     return budgets
 
+@router.get("/budgets/{budget_id}", response_model=BudgetDetail)
+async def get_budget(budget_id: str, user: dict = Depends(get_current_user)):
+    budget = await db.budgets.find_one({
+        "_id": ObjectId(budget_id),
+        "user_id": str(user["_id"])
+    })
+    if budget is None:
+        raise HTTPException(404, "Budget not found.")
+    
+    expenses = await db.expenses.find({
+        "budget_id": str(budget["_id"]),
+        "user_id": str(user["_id"])
+    }).to_list(length=100)
+
+    total_spent = sum(expense["amount"] for expense in expenses)
+    balance = budget["amount"] - total_spent
+
+    expenses_out = [
+        ExpenseOut(
+            id=str(exp["_id"]),
+            label=exp["label"],
+            amount=exp["amount"],
+            date=exp.get("date"),  # include if using
+            budget_id=exp["budget_id"],
+            created_at=exp["created_at"]
+        )
+        for exp in expenses
+    ]
+
+    return BudgetDetail(
+        id=str(budget["_id"]),
+        name=budget["name"],
+        amount=budget["amount"],
+        month=budget["month"],
+        balance=balance,
+        expenses=expenses_out
+    )
+
+
+
 @router.post("/budgets/{budget_id}/expenses", response_model=ExpenseOut)
 async def create_expense(expense: ExpenseIn, budget_id: str, user: dict = Depends(get_current_user)):
     budget = await db.budgets.find_one({
         "_id": ObjectId(budget_id),
         "user_id": str(user["_id"])
     })
-    if budget == None:
+    if budget is None:
         raise HTTPException(404, "Budget not found.")
     
     data = expense.model_dump()
