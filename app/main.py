@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from app.auth.docs import setup_custom_openapi
 
-from config import db
-from routes import budget, user
+from app.config import db
+from app.routes import budget, user
 
 app = FastAPI()
 setup_custom_openapi(app)
