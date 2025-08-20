@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from auth.docs import setup_custom_openapi
+from app.auth.docs import setup_custom_openapi
 
 from config import db
 from routes import budget, user
