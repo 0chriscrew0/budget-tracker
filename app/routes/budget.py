@@ -1,9 +1,9 @@
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
-from models.expense import ExpenseIn, ExpenseOut
-from models.budget import BudgetDetail, BudgetIn, BudgetOut
-from auth.utils import get_current_user
-from config import db
+from app.models.expense import ExpenseIn, ExpenseOut
+from app.models.budget import BudgetDetail, BudgetIn, BudgetOut
+from app.auth.utils import get_current_user
+from app.config import db
 from datetime import datetime, timezone
 
 router = APIRouter()

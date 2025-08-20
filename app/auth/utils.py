@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 import os
 from dotenv import load_dotenv
 from bson import ObjectId
-from config import db
+from app.config import db
 
 
 load_dotenv()

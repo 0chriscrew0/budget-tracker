@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-from models.expense import ExpenseOut
+from app.models.expense import ExpenseOut
 
 class BudgetIn(BaseModel):
     name: str

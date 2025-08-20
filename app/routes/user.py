@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
 import bcrypt
-from models.user import UserIn, UserOut, LoginIn, Token
-from config import db
+from app.models.user import UserIn, UserOut, LoginIn, Token
+from app.config import db
 from datetime import datetime, timezone
-from auth.utils import create_access_token
+from app.auth.utils import create_access_token
 
 router = APIRouter()
 
