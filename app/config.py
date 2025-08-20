@@ -11,6 +11,7 @@ DB_NAME = os.getenv("DB_NAME")
 client = AsyncIOMotorClient(
     uri,
     tls=True,
+    tlsAllowInvalidCertificates=False,
     tlsCAFile=certifi.where()
 )
 
